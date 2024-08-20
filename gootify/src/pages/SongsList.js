@@ -67,22 +67,6 @@ function SongsList() {
         }
     }, [queue, page]);
 
-    const handleAddSong = () => {
-        // Add your logic for adding a song here
-    };
-
-    const handleRemoveSong = (id) => {
-        // Logic for removing a song
-        fetch(`http://localhost:3000/player/queue/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        }).then(() => {
-            setDisplayedSongs(displayedSongs.filter(song => song.id !== id));
-        }).catch(error => console.error('Error removing song:', error));
-    };
-
     const handleChangePage = (event, value) => {
         setPage(value);
     };
@@ -92,15 +76,11 @@ function SongsList() {
 
     return (
         <div style={{ padding: 16 }}>
-            <Button variant="contained" color="primary" onClick={handleAddSong}>Add Song</Button>
             <div className="table-container">
                 <List>
                     {displayedSongs.map(song => (
                         <ListItem key={song.id}>
-                            <ListItemText primary={song.name} />
-                            <Button variant="contained" color="secondary" onClick={() => handleRemoveSong(song.id)}>
-                                Remove
-                            </Button>
+                            <ListItemText primary={song.name} secondary={song.artists ? song.artists.map(artist => artist.name).join(', ') : 'N/A'} />
                         </ListItem>
                     ))}
                 </List>

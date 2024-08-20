@@ -10,7 +10,6 @@ function usePlayer(intervalTime) {
     const [queueData, setQueueData] = useState(new Map());
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [currentlyPlayingData, setCurrentlyPlayingData] = useState(new Map());
     const [progressMs, setProgressMs] = useState(0);
     const fetchData = async () => {
         try {
@@ -58,7 +57,6 @@ function usePlayer(intervalTime) {
             if (typeof data !== 'object' || data === null) {
                 throw new Error(`clearly a bad playerResponse: ${data}`);
             }
-            setCurrentlyPlayingData(new Map(Object.entries(data)));
             setProgressMs(data.progress_ms || 0);
         } catch (err) {
             console.error('Fetch error:', err);
