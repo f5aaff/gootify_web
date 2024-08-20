@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TextField, Typography, Button, Table, TableBody, TableCell, TableHead, TableRow, Container, Slider, Radio, RadioGroup, FormControlLabel, FormLabel, Pagination, IconButton } from '@mui/material';
-import { ArrowBack, ArrowForward } from '@mui/icons-material';
+import { ArrowBack, ArrowForward, Battery0Bar } from '@mui/icons-material';
 
 function Search() {
     const [query, setQuery] = useState('');
@@ -43,6 +43,33 @@ function Search() {
             .catch(error => console.error('Error fetching search results:', error));
     };
 
+    const handlePlayNow = (result) => {
+        const requestUrl = `http://localhost:3000/player/play`;
+
+        const requestData = {
+            uris: [result.uri],
+            offset: {
+                position: 0
+            },
+            position_ms: 0
+        };
+
+
+        fetch(requestUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestData)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to add to queue');
+                }
+                console.log('Item added to queue');
+            })
+            .catch(error => console.error('Error adding item to queue:', error));
+    };
     const handleAddToQueue = (result) => {
         const requestUrl = `http://localhost:3000/devices/queue/add/${result.uri}`;
 
@@ -68,7 +95,7 @@ function Search() {
     const displayedResults = results.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
     return (
-        <Container style={{ padding: 16, marginBottom : 150}}>
+        <Container style={{ padding: 16, marginBottom: 150 }}>
             <Typography variant="h6" color="primary">Search</Typography>
             <TextField
                 label="Search"
@@ -143,12 +170,17 @@ function Search() {
                                         Add to Queue
                                     </Button>
                                 </TableCell>
+                                <TableCell>
+                                    <Button variant="contained" color="secondary" onClick={() => handlePlayNow(result)}>
+                                        Play Now
+                                    </Button>
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
 
-                <div className="pagination-container" style={{ padding: 30, margin: 30}}>
+                <div className="pagination-container" style={{ padding: 30, margin: 30 }}>
                     <Pagination
                         count={Math.ceil(results.length / itemsPerPage)}
                         page={page}
