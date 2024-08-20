@@ -1,0 +1,14 @@
+.table-container {
+  max-height: 400px; /* Set a fixed height for the table */
+  overflow-y: auto;  /* Enable vertical scrolling */
+  margin-bottom: 20px; /* Space between the table and pagination */
+}
+
+.pagination-container {
+  text-align: center; /* Center the pagination buttons */
+  position: sticky;  /* Keep the pagination buttons fixed in place */
+  bottom: 0;
+  background-color: transparent; /* White background to match the table area */
+  padding: 10px 0; /* Add padding around the pagination buttons */
+}
+

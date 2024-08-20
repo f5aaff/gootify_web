@@ -1,0 +1,252 @@
+/* General Material Design Colors */
+body {
+  margin: 0;
+  background-color: #f5f5f5;
+  font-family: 'Roboto', sans-serif;
+  color: #212121;
+}
+.table-container {
+  max-height: 400px; /* Adjust the height as needed */
+  overflow-y: auto;  /* Adds a vertical scrollbar */
+  margin-bottom: 20px; /* Space between table and pagination */
+}
+
+.pagination-container {
+  text-align: center; /* Center the pagination buttons */
+  position: sticky;  /* Keeps pagination fixed */
+  bottom: 0;
+  background-color: #fff; /* Ensures background is consistent when scrolling */
+  padding: 10px 0; /* Adds space around the buttons */
+}
+
+/* Tabs styling */
+.tabs {
+  display: flex;
+  justify-content: center;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.tab {
+  background: none;
+  border: none;
+  color: #757575;
+  font-size: 16px;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin: 0 5px;
+  transition: color 0.3s ease-in-out;
+}
+
+.tab.active {
+  color: #1e88e5;
+  border-bottom: 2px solid #1e88e5;
+}
+
+.tab:hover {
+  color: #1e88e5;
+}
+
+.content {
+  padding: 20px;
+  padding-bottom: 110px; /* Ensures content doesn't overlap with media player */
+}
+
+.app {
+  text-align: center;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Material Style Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  text-align: left; /* Ensures left-justification */
+}
+
+th, td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+th {
+  background-color: #e0e0e0;
+  color: #212121;
+  font-weight: 600;
+}
+
+td {
+  color: #424242;
+}
+
+tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Ensure the MediaPlayer stays at the bottom */
+.media-player {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+/* Media Player Styling */
+.media-player {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #424242;
+  color: white;
+  height: 90px;
+}
+
+.media-player__left {
+  display: flex;
+  align-items: center;
+}
+
+.media-player__album-art {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+}
+
+.media-player__song-info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.media-player__song-name {
+  margin: 0;
+  font-size: 14px;
+}
+
+.media-player__artist-name {
+  margin: 0;
+  font-size: 12px;
+  color: #bdbdbd;
+}
+
+.media-player__center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.media-player__controls {
+  display: flex;
+  align-items: center;
+}
+
+.media-player__control-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  margin: 0 10px;
+  cursor: pointer;
+}
+
+.media-player__control-button:hover {
+  color: #1e88e5; /* Material Blue */
+}
+
+.media-player__progress-bar {
+  display: flex;
+  align-items: center;
+  width: 500px;
+  margin-top: 5px;
+}
+
+.media-player__time {
+  font-size: 12px;
+  color: #bdbdbd;
+}
+
+.media-player__slider {
+  flex-grow: 1;
+  margin: 0 10px;
+}
+
+.media-player__right {
+  display: flex;
+  align-items: center;
+}
+
+.media-player__volume-control {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.media-player__volume-control:hover {
+  color: #1e88e5; /* Material Blue */
+}
+
+/* Button styles */
+.button {
+  display: inline-block;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #fff;
+  background-color: #6200ee;
+  border: none;
+  border-radius: 4px;
+  box-shadow: 0 3px 1px -2px rgba(0,0,0,0.2), 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12);
+  transition: background-color 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+}
+
+/* Label styles */
+.label {
+  display: inline-block;
+  width: 150px; /* Set a fixed width for all labels */
+  margin-bottom: 8px;
+  font-size: 16px;
+  color: rgba(0,0,0,0.87);
+  text-align: right;
+  padding-right: 16px;
+}
+
+.button:hover {
+  background-color: #3700b3;
+  box-shadow: 0 2px 4px -1px rgba(0,0,0,0.2), 0 4px 5px 0 rgba(0,0,0,0.14), 0 1px 10px 0 rgba(0,0,0,0.12);
+}
+
+/* Input field styles */
+.input {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: rgba(0,0,0,0.87);
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(0,0,0,0.42);
+  transition: border-bottom-color 0.3s;
+}
+
+.input:focus {
+  outline: none;
+  border-bottom-color: #6200ee;
+}
+
+.input::placeholder {
+  color: rgba(0,0,0,0.54);
+}

@@ -1,0 +1,107 @@
+/* Basic reset and dark theme */
+body {
+  margin: 0;
+  background-color: #121212;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+body, .main-content {
+  margin-bottom: 100px; /* Adjust this value to be at least as tall as the media player */
+}
+.media-player {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #f5f5f5;
+  z-index: 1000;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+  padding: 10px; /* Ensures content inside is not too close to the edge */
+}
+
+.media-player__left {
+  display: flex;
+  align-items: center;
+}
+
+.media-player__album-art {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+}
+
+.media-player__song-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.media-player__song-name {
+  margin: 0;
+  font-size: 14px;
+}
+
+.media-player__artist-name {
+  margin: 0;
+  font-size: 12px;
+  color: #b3b3b3;
+}
+
+.media-player__center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.media-player__controls {
+  display: flex;
+  align-items: center;
+}
+
+.media-player__control-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  margin: 0 10px;
+  cursor: pointer;
+}
+
+.media-player__control-button:hover {
+  color: #1db954; /* Spotify green */
+}
+
+.media-player__progress-bar {
+  display: flex;
+  align-items: center;
+  width: 500px;
+  margin-top: 5px;
+}
+
+.media-player__time {
+  font-size: 12px;
+  color: #b3b3b3;
+}
+
+.media-player__slider {
+  flex-grow: 1;
+  margin: 0 10px;
+}
+
+.media-player__right {
+  display: flex;
+  align-items: center;
+}
+
+.media-player__volume-control {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.media-player__volume-control:hover {
+  color: #1db954; /* Spotify green */
+}
+
