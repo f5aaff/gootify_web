@@ -147,6 +147,7 @@ function Search() {
                             <TableCell>Album/Description</TableCell>
                             <TableCell>Preview</TableCell>
                             <TableCell>Add to Queue</TableCell>
+                            <TableCell>Play Now</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
