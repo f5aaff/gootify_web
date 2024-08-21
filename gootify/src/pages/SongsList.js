@@ -59,7 +59,7 @@ function SongsList() {
     const { data: queue, loading, error } = useQueue(2000); // Use the custom hook with a 2-second interval
     const [displayedSongs, setDisplayedSongs] = useState([]);
     const [page, setPage] = useState(1);
-    const itemsPerPage = 10;
+    const itemsPerPage = 20;
 
     useEffect(() => {
         if (queue && queue.length > 0) {
@@ -75,7 +75,7 @@ function SongsList() {
     if (error) return <p>Error: {error.message}</p>;
 
     return (
-        <div style={{ padding: 16 }}>
+        <div style={{ padding: 1 }}>
             <div className="table-container">
                 <List>
                     {displayedSongs.map(song => (

@@ -51,13 +51,12 @@ function SearchRecommend() {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const itemsPerPage = 5;
 
-    //    const totalSeeds = selectedGenres.length = (seedArtists ? seedArtists.split(',').length : 0) + (seedTracks ? seedTracks.split(',').length : 0);
     const seedArtistLength = seedArtists ? seedArtists.split(',').length : 0;
     const seedTrackLength = seedTracks ? seedTracks.split(',').length : 0;
     const seedGenresLength = selectedGenres.length;
     const totalSeeds = seedArtistLength + seedTrackLength + seedGenresLength;
     const maxSeedsReached = totalSeeds >= 5;
-
+    const noSeeds = totalSeeds == 0;
 
     const handleFilterChange = useCallback((key) => (event, newValue) => {
         setFilters(prevFilters => ({
@@ -327,6 +326,7 @@ function SearchRecommend() {
                         variant="contained"
                         color="primary"
                         fullWidth
+                        disabled={noSeeds}
                         onClick={handleGetRecommendations}
                         style={{ marginTop: 16 }}
                     >
