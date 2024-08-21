@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardMedia, Typography, IconButton, Grid, Slider } from '@mui/material';
+import { Card, CardContent, CardMedia, Typography, IconButton, Grid, Slider, InputLabel } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
@@ -8,6 +8,7 @@ import './MediaPlayer.css'; // Import the CSS file for styling
 
 function usePlayer(intervalTime) {
     const [queueData, setQueueData] = useState(new Map());
+    const [device, setDevice] = useState(new Map());
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [progressMs, setProgressMs] = useState(0);
@@ -58,6 +59,20 @@ function usePlayer(intervalTime) {
                 throw new Error(`clearly a bad playerResponse: ${data}`);
             }
             setProgressMs(data.progress_ms || 0);
+
+
+            const deviceResponse = await fetch('http://localhost:3000/devices', {
+                method: 'GET',
+            });
+            if (!deviceResponse.ok) {
+                const errorText = await deviceResponse.text();
+                throw new Error(`device response was not ok: ${errorText}`);
+            }
+            const device = await deviceResponse.json();
+            if (typeof device !== "object" || device === null) {
+                throw new Error(`clearly a bad device: ${data}`);
+            }
+            setDevice(new Map(Object.entries(device)));
         } catch (err) {
             console.error('Fetch error:', err);
             setError(err);
@@ -76,16 +91,17 @@ function usePlayer(intervalTime) {
         return () => clearInterval(intervalId); // Clean up the interval on unmount
     }, [intervalTime]); // Dependency array includes `intervalTime`
 
-    return { queueData, loading, error, progressMs };
+    return { queueData, loading, error, progressMs, device };
 }
 
 function MediaPlayer({ intervalTime = 1000 }) { // Added intervalTime as a prop with a default of 1000ms
     const [isPlaying, setIsPlaying] = useState(false);
-    const { queueData, loading, error, progressMs } = usePlayer(intervalTime); // Pass intervalTime to usePlayer
+    const { queueData, loading, error, progressMs, device } = usePlayer(intervalTime); // Pass intervalTime to usePlayer
     const [name, setName] = useState("");
     const [artist, setArtist] = useState("");
     const [albumArt, setAlbumArt] = useState("");
     const [itemLength, setItemLength] = useState(0);
+    const [volume, setVolume] = useState(0);
     const handlePlayPause = () => {
         const action = isPlaying ? "pause" : "play";
         fetch('http://localhost:3000/player/controls/' + action, {
@@ -117,7 +133,7 @@ function MediaPlayer({ intervalTime = 1000 }) { // Added intervalTime as a prop 
 
             }
         }
-    }, [queueData]); // Dependency array includes `queueData`
+    }, [queueData, device]); // Dependency array includes `queueData`
 
     const handleNext = () => {
         fetch('http://localhost:3000/player/controls/next', {
@@ -137,6 +153,12 @@ function MediaPlayer({ intervalTime = 1000 }) { // Added intervalTime as a prop 
         });
     };
 
+    const handleChange = (_, newValue) => {
+        setVolume(newValue);
+        fetch(`http://localhost:3000/player/setVol/${newValue}`, {
+            method: 'GET',
+        });
+    };
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error.message}</p>;
     const formatTime = (milliseconds) => {
@@ -194,6 +216,20 @@ function MediaPlayer({ intervalTime = 1000 }) { // Added intervalTime as a prop 
                                 </div>
                             </div>
                             <span style={{ marginLeft: '10px' }}>{formatTime(itemLength)}</span>
+                        </div>
+                        <div>
+
+                            <Slider
+                                step={10}
+                                value={device.volume_percent}
+                                disabled={!device.supports_volume}
+                                valueLabelDisplay="auto"
+                                min={0}
+                                max={100}
+                                onChange={handleChange}
+                            />
+
+                            <Typography disabled={!device.supports_volume} variant="h10">This Device Does Not Support Volume</Typography>
                         </div>
                     </CardContent>
                 </Grid>
