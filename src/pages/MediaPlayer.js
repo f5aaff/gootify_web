@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardMedia, Typography, IconButton, Grid, Slider, InputLabel } from '@mui/material';
+import { Card, CardContent, CardMedia, Typography, IconButton, Grid, Slider, Box, LinearProgress } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
@@ -100,7 +100,7 @@ function MediaPlayer({ intervalTime = 1000 }) { // Added intervalTime as a prop 
     const [name, setName] = useState("");
     const [artist, setArtist] = useState("");
     const [albumArt, setAlbumArt] = useState("");
-    const [itemLength, setItemLength] = useState(0);
+    const [durationMs, setItemLength] = useState(0);
     const [volume, setVolume] = useState(0);
     const handlePlayPause = () => {
         const action = isPlaying ? "pause" : "play";
@@ -143,7 +143,6 @@ function MediaPlayer({ intervalTime = 1000 }) { // Added intervalTime as a prop 
             },
         });
     };
-
     const handlePrevious = () => {
         fetch('http://localhost:3000/player/controls/previous', {
             method: 'GET',
@@ -159,6 +158,13 @@ function MediaPlayer({ intervalTime = 1000 }) { // Added intervalTime as a prop 
             method: 'GET',
         });
     };
+
+    const handleSeek = (_, newValue) => {
+        setVolume(newValue);
+        fetch(`http://localhost:3000/player/seek/${newValue}`, {
+            method: 'GET',
+        });
+    };
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error.message}</p>;
     const formatTime = (milliseconds) => {
@@ -169,7 +175,6 @@ function MediaPlayer({ intervalTime = 1000 }) { // Added intervalTime as a prop 
 
         return `${hours > 0 ? `${hours}:` : ''}${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     };
-    const progressPercentage = (progressMs / itemLength) * 100;
     return (
         <Card className="media-player">
             <Grid container alignItems="center">
@@ -202,23 +207,43 @@ function MediaPlayer({ intervalTime = 1000 }) { // Added intervalTime as a prop 
                                 <SkipNextIcon />
                             </IconButton>
                         </div>
-                        <div>
-                            <span style={{ marginRight: '10px' }}>{formatTime(progressMs)}</span>
-                            <div style={{ flex: 1, height: '10px', backgroundColor: '#e0e0e0', borderRadius: '5px', overflow: 'hidden' }}>
-                                <div
-                                    style={{
-                                        width: `${progressPercentage}%`,
-                                        height: '100%',
-                                        backgroundColor: '#76c7c0',
-                                        transition: 'width 0.25s ease-in-out',
-                                    }}
-                                >
-                                </div>
-                            </div>
-                            <span style={{ marginLeft: '10px' }}>{formatTime(itemLength)}</span>
+                        <div><Box display="flex" alignItems="center">
+                            {/* Current position */}
+                            <Typography variant="body2" style={{ marginRight: '10px' }}>
+                                {formatTime(progressMs)}
+                            </Typography>
+
+                            {/* Slider */}
+                            <Slider
+                                value={progressMs}
+                                min={0}
+                                max={durationMs}
+                                onChangeCommitted={(_, newValue) => handleSeek(newValue)}
+                                sx={{
+                                    flex: 1,
+                                    marginX: '10px',
+                                    color: '#f5adff',
+                                    height: 6,
+                                    '& .MuiSlider-track': {
+                                        border: 'none',
+                                    },
+                                    '& .MuiSlider-thumb': {
+                                        width: 12,
+                                        height: 12,
+                                        '&:hover, &.Mui-focusVisible, &.Mui-active': {
+                                            boxShadow: 'none',
+                                        },
+                                    },
+                                }}
+                            />
+
+                            {/* Total duration */}
+                            <Typography variant="body2" style={{ marginLeft: '10px' }}>
+                                {formatTime(durationMs)}
+                            </Typography>
+                        </Box>
                         </div>
                         <div>
-
                             <Slider
                                 step={10}
                                 value={device.volume_percent}
