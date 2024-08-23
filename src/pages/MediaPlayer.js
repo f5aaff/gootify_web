@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardMedia, Typography, IconButton, Grid, Slider, Box, LinearProgress } from '@mui/material';
+import { Card, CardContent, CardMedia, Typography, Button, Select, IconButton, Popover, Grid, Slider, Box, LinearProgress, MenuItem } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
@@ -102,6 +102,9 @@ function MediaPlayer({ intervalTime = 1000 }) { // Added intervalTime as a prop 
     const [albumArt, setAlbumArt] = useState("");
     const [durationMs, setItemLength] = useState(0);
     const [volume, setVolume] = useState(0);
+    const [devices, setDevices] = useState([]);
+    const [anchorEl, setAnchorEl] = useState(null);
+
     const handlePlayPause = () => {
         const action = isPlaying ? "pause" : "play";
         fetch('http://localhost:3000/player/controls/' + action, {
@@ -143,6 +146,32 @@ function MediaPlayer({ intervalTime = 1000 }) { // Added intervalTime as a prop 
             },
         });
     };
+
+    const getDevices = () => {
+        fetch('http://localhost:3000/devices/all', {
+            method: 'GET'
+        }).then(response => response.json())
+            .then(data => {
+                setDevices(data.devices);
+                console.log(data);
+            }).catch(error => console.error(`error fetching devices: ${error}`))
+    }
+
+
+    const handleMakeActive = (result) => {
+        var jsonBody = {
+            device_ids: [result.id]
+        }
+        const requestUrl = `http://localhost:3000/devices/transfer`
+        fetch(requestUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: jsonBody,
+        })
+    }
+
     const handlePrevious = () => {
         fetch('http://localhost:3000/player/controls/previous', {
             method: 'GET',
@@ -165,6 +194,7 @@ function MediaPlayer({ intervalTime = 1000 }) { // Added intervalTime as a prop 
             method: 'GET',
         });
     };
+
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error.message}</p>;
     const formatTime = (milliseconds) => {
@@ -175,10 +205,26 @@ function MediaPlayer({ intervalTime = 1000 }) { // Added intervalTime as a prop 
 
         return `${hours > 0 ? `${hours}:` : ''}${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     };
+
     return (
         <Card className="media-player">
             <Grid container alignItems="center">
-                <Grid item xs={4}>
+                <Grid item xs={1}>
+                    <Select
+                        onChange={handleMakeActive}
+                        displayEmpty
+                        defaultValue=""
+                        autoWidth
+                    >
+                        <MenuItem value="" disabled>{device.get("name")}</MenuItem>
+                        {
+                            devices.map((device) => (
+                                <MenuItem value={device.name}>{device.name}</MenuItem>
+                            ))
+                        }
+                    </Select>
+                </Grid>
+                <Grid item xs={1}>
                     <CardMedia
                         component="img"
                         height="160"
@@ -187,8 +233,19 @@ function MediaPlayer({ intervalTime = 1000 }) { // Added intervalTime as a prop 
                         alt="Album cover"
                         style={{ objectFit: 'contain' }} // Ensure album art isn't clipped
                     />
+                    <div><Box  alignItems="center">
+                        <IconButton onClick={handlePrevious} color="primary">
+                            <SkipPreviousIcon />
+                        </IconButton>
+                        <IconButton onClick={handlePlayPause} color="primary">
+                            {isPlaying ? <PauseIcon /> : <PlayArrowIcon />}
+                        </IconButton>
+                        <IconButton onClick={handleNext} color="primary">
+                            <SkipNextIcon />
+                        </IconButton>
+                    </Box></div>
                 </Grid>
-                <Grid item xs={8}>
+                <Grid item xs={4}>
                     <CardContent>
                         <Typography variant="h5" component="div" color="primary">
                             {name}
@@ -196,17 +253,6 @@ function MediaPlayer({ intervalTime = 1000 }) { // Added intervalTime as a prop 
                         <Typography variant="subtitle1" color="text.secondary">
                             {artist}
                         </Typography>
-                        <div>
-                            <IconButton onClick={handlePrevious} color="primary">
-                                <SkipPreviousIcon />
-                            </IconButton>
-                            <IconButton onClick={handlePlayPause} color="primary">
-                                {isPlaying ? <PauseIcon /> : <PlayArrowIcon />}
-                            </IconButton>
-                            <IconButton onClick={handleNext} color="primary">
-                                <SkipNextIcon />
-                            </IconButton>
-                        </div>
                         <div><Box display="flex" alignItems="center">
                             {/* Current position */}
                             <Typography variant="body2" style={{ marginRight: '10px' }}>
@@ -218,7 +264,7 @@ function MediaPlayer({ intervalTime = 1000 }) { // Added intervalTime as a prop 
                                 value={progressMs}
                                 min={0}
                                 max={durationMs}
-                                onChangeCommitted={(_, newValue) => handleSeek(newValue)}
+                                onChange={(_, newValue) => handleSeek(newValue)}
                                 sx={{
                                     flex: 1,
                                     marginX: '10px',
