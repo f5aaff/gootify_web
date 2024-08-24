@@ -7,6 +7,8 @@ import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import './MediaPlayer.css'; // Import the CSS file for styling
 
 function usePlayer(intervalTime) {
+
+    const [devices, setDevices] = useState([]);
     const [queueData, setQueueData] = useState(new Map());
     const [device, setDevice] = useState(new Map());
     const [loading, setLoading] = useState(true);
@@ -81,28 +83,45 @@ function usePlayer(intervalTime) {
         }
     };
 
+    const getDevices = async () => {
+        const devicesReq = await fetch('http://localhost:3000/devices/all', {
+            method: 'GET'
+        })
+        if (!devicesReq.ok) {
+            const errorText = await devicesReq.text();
+            throw new Error(`error retrieving devices: ${errorText}`);
+        }
+        const devices = await devicesReq.json();
+
+        if (typeof devices !== "object" || devices === null) {
+            throw new Error(`clearly a bad device: ${devices}`);
+        }
+        setDevices(devices)
+    }
+
     useEffect(() => {
         fetchData(); // Fetch queueData on component mount
-
+        getDevices();
         const intervalId = setInterval(() => {
+
+            getDevices();
             fetchData();
         }, intervalTime);
 
         return () => clearInterval(intervalId); // Clean up the interval on unmount
     }, [intervalTime]); // Dependency array includes `intervalTime`
 
-    return { queueData, loading, error, progressMs, device };
+    return { queueData, loading, error, progressMs, device, devices };
 }
 
 function MediaPlayer({ intervalTime = 1000 }) { // Added intervalTime as a prop with a default of 1000ms
     const [isPlaying, setIsPlaying] = useState(false);
-    const { queueData, loading, error, progressMs, device } = usePlayer(intervalTime); // Pass intervalTime to usePlayer
+    const { queueData, loading, error, progressMs, device, devices } = usePlayer(intervalTime); // Pass intervalTime to usePlayer
     const [name, setName] = useState("");
     const [artist, setArtist] = useState("");
     const [albumArt, setAlbumArt] = useState("");
     const [durationMs, setItemLength] = useState(0);
     const [volume, setVolume] = useState(0);
-    const [devices, setDevices] = useState([]);
     const [anchorEl, setAnchorEl] = useState(null);
 
     const handlePlayPause = () => {
@@ -147,16 +166,6 @@ function MediaPlayer({ intervalTime = 1000 }) { // Added intervalTime as a prop 
         });
     };
 
-    const getDevices = () => {
-        fetch('http://localhost:3000/devices/all', {
-            method: 'GET'
-        }).then(response => response.json())
-            .then(data => {
-                setDevices(data.devices);
-                console.log(data);
-            }).catch(error => console.error(`error fetching devices: ${error}`))
-    }
-
 
     const handleMakeActive = (result) => {
         var jsonBody = {
@@ -189,7 +198,6 @@ function MediaPlayer({ intervalTime = 1000 }) { // Added intervalTime as a prop 
     };
 
     const handleSeek = (_, newValue) => {
-        setVolume(newValue);
         fetch(`http://localhost:3000/player/seek/${newValue}`, {
             method: 'GET',
         });
@@ -218,7 +226,7 @@ function MediaPlayer({ intervalTime = 1000 }) { // Added intervalTime as a prop 
                     >
                         <MenuItem value="" disabled>{device.get("name")}</MenuItem>
                         {
-                            devices.map((device) => (
+                            devices.devices.map((device) => (
                                 <MenuItem value={device.name}>{device.name}</MenuItem>
                             ))
                         }
@@ -233,7 +241,7 @@ function MediaPlayer({ intervalTime = 1000 }) { // Added intervalTime as a prop 
                         alt="Album cover"
                         style={{ objectFit: 'contain' }} // Ensure album art isn't clipped
                     />
-                    <div><Box  alignItems="center">
+                    <div><Box alignItems="center">
                         <IconButton onClick={handlePrevious} color="primary">
                             <SkipPreviousIcon />
                         </IconButton>
@@ -264,7 +272,7 @@ function MediaPlayer({ intervalTime = 1000 }) { // Added intervalTime as a prop 
                                 value={progressMs}
                                 min={0}
                                 max={durationMs}
-                                onChange={(_, newValue) => handleSeek(newValue)}
+                                onChange={handleSeek}
                                 sx={{
                                     flex: 1,
                                     marginX: '10px',
