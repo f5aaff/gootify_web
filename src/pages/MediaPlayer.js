@@ -41,6 +41,7 @@ function usePlayer(intervalTime) {
 
             if (typeof currentlyPlaying !== 'object' || currentlyPlaying === null) {
                 setLoading(true);
+
             }
 
             setQueueData(new Map(Object.entries(currentlyPlaying)));
@@ -120,9 +121,8 @@ function MediaPlayer({ intervalTime = 1000 }) { // Added intervalTime as a prop 
     const [name, setName] = useState("");
     const [artist, setArtist] = useState("");
     const [albumArt, setAlbumArt] = useState("");
-    const [durationMs, setItemLength] = useState(0);
+    const [durationMs, setDurationMs] = useState(0);
     const [volume, setVolume] = useState(0);
-    const [anchorEl, setAnchorEl] = useState(null);
 
     const handlePlayPause = () => {
         const action = isPlaying ? "pause" : "play";
@@ -145,13 +145,14 @@ function MediaPlayer({ intervalTime = 1000 }) { // Added intervalTime as a prop 
                 setArtist(show.get("name") || "");
                 const images = new Map(Object.entries(queueData.get("images")[0]));
                 setAlbumArt(images.get("url" || "https://via.placeholder.com/150"));
-                setItemLength(queueData.get("duration_ms") || 0);
+                setDurationMs(queueData.get("duration_ms") || 0);
             } else if (type === "track") {
                 setName(queueData.get("name") || "");
                 const artists = new Map(Object.entries(queueData.get("artists")[0]));
                 setArtist(artists.get("name") || "");
                 const images = new Map(Object.entries(new Map(Object.entries(queueData.get("album"))).get("images")[0]));
                 setAlbumArt(images.get("url") || "https://via.placeholder.com/150");
+                setDurationMs(queueData.get("duration_ms") || 0);
 
             }
         }
@@ -169,7 +170,7 @@ function MediaPlayer({ intervalTime = 1000 }) { // Added intervalTime as a prop 
 
     const handleMakeActive = (result) => {
         var jsonBody = {
-            device_ids: [result.id]
+            device_ids: [result.target.value]
         }
         const requestUrl = `http://localhost:3000/devices/transfer`
         fetch(requestUrl, {
@@ -177,7 +178,7 @@ function MediaPlayer({ intervalTime = 1000 }) { // Added intervalTime as a prop 
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: jsonBody,
+            body: JSON.stringify(jsonBody),
         })
     }
 
@@ -190,7 +191,7 @@ function MediaPlayer({ intervalTime = 1000 }) { // Added intervalTime as a prop 
         });
     };
 
-    const handleChange = (_, newValue) => {
+    const handleVolume = (_, newValue) => {
         setVolume(newValue);
         fetch(`http://localhost:3000/player/setVol/${newValue}`, {
             method: 'GET',
@@ -198,6 +199,8 @@ function MediaPlayer({ intervalTime = 1000 }) { // Added intervalTime as a prop 
     };
 
     const handleSeek = (_, newValue) => {
+
+        console.info(durationMs);
         fetch(`http://localhost:3000/player/seek/${newValue}`, {
             method: 'GET',
         });
@@ -227,7 +230,7 @@ function MediaPlayer({ intervalTime = 1000 }) { // Added intervalTime as a prop 
                         <MenuItem value="" disabled>{device.get("name")}</MenuItem>
                         {
                             devices.devices.map((device) => (
-                                <MenuItem value={device.name}>{device.name}</MenuItem>
+                                <MenuItem value={device.id}>{device.name}</MenuItem>
                             ))
                         }
                     </Select>
@@ -305,7 +308,7 @@ function MediaPlayer({ intervalTime = 1000 }) { // Added intervalTime as a prop 
                                 valueLabelDisplay="auto"
                                 min={0}
                                 max={100}
-                                onChange={handleChange}
+                                onChange={handleVolume}
                             />
 
                             <Typography disabled={!device.supports_volume} variant="h10">This Device Does Not Support Volume</Typography>

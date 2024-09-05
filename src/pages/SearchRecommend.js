@@ -269,16 +269,28 @@ function SearchRecommend() {
                 <Box sx={{ width: 800, padding: 20 }}>
                     <Typography variant="h6">Recommendations</Typography>
                     {Object.entries(filters).map(([key, value]) => (
-                        <RangeSlider
-                            key={key}
-                            label={key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}
-                            value={value}
-                            onChange={handleFilterChange(key)}
-                            min={key === 'durationMs' ? 0 : (key === 'loudness' ? -60 : 0)}
-                            max={key === 'durationMs' ? 600000 : (key === 'loudness' ? 0 : 1)}
-                            step={0.01}
-                        />
-                    ))}
+                        key === 'tempo' ? (
+                            <div>
+                                <label>{key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}</label>
+                                <RangeSlider
+                                    value={value}
+                                    onChange={handleFilterChange(key)}
+                                    min={0}
+                                    max={1000}
+                                    step={1}
+                                />
+                            </div>
+                        ) : (
+                            <RangeSlider
+                                key={key}
+                                label={key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}
+                                value={value}
+                                onChange={handleFilterChange(key)}
+                                min={key === 'durationMs' ? 0 : (key === 'loudness' ? -60 : 0)}
+                                max={key === 'durationMs' ? 600000 : (key === 'loudness' ? 0 : 1)}
+                                step={0.01}
+                            />
+                        )))}
 
                     <Typography variant="h6">Seeds:{totalSeeds}/5</Typography>
                     <FormControl fullWidth style={{ marginTop: 16 }}>

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import MediaPlayer from './pages/MediaPlayer';
 import SearchRecommend from './pages/SearchRecommend';
 import SongsList from './pages/SongsList';
-import Devices from './pages/devices.js';
 import { AppBar, Toolbar, Tabs, Tab, CssBaseline } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -25,8 +24,10 @@ function App() {
                 return <SearchRecommend />;
             case 'songslist':
                 return <SongsList />;
-            case 'devices':
-                return <Devices />;
+            case 'playlists':
+                return <SongsList />;
+            case 'browse':
+                return <SongsList />;
             default:
                 return null;
         }
@@ -46,7 +47,8 @@ function App() {
                     >
                         <Tab label="Search & Recommendations" value="SearchRecommend" />
                         <Tab label="Queue" value="songslist" />
-                        <Tab label="Devices" value="devices" />
+                        <Tab label="Playlists" value="playlists" />
+                        <Tab label="Browse" value="browse" />
                     </Tabs>
                 </Toolbar>
             </AppBar>
